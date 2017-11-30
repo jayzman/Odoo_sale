@@ -4,7 +4,7 @@ from odoo import fields, models, api
 
 class StockPickingHeri(models.Model):
     _inherit = 'stock.picking'   
-
+    #stock heri
     date_arrivee_reelle = fields.Datetime(string="Date d'arrivée réelle des matériels")  
     location_id = fields.Many2one(
         'stock.location', "Source Location Zone",
