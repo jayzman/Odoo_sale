@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+	<data>
+		<!-- workflow -->
+		<record id="demande_location_entrepreneur_wkf" model="workflow">
+			<field name="name">Demande d'ajout de matériels loués par l'entrepreneur</field>
+			<field name="osv">sale.order</field>
+			<field name="on_create">True</field>
+		</record>
+		
+		<!-- workflow activity-->
+		<record id="act_draft2" model="workflow.activity">
+			<field name="wkf_id" ref="demande_location_entrepreneur_wkf"/>
+			<field name="flow_start">True</field>
+			<field name="name">Nouveau</field>
+			<field name="kind">function</field>
+			<field name="action">action_set_draft()</field>
+		</record>
+		
+		<record id="act_solvabilite_ok" model="workflow.activity">
+			<field name="wkf_id" ref="demande_location_entrepreneur_wkf"/>
+			<field name="name">Contrôle solvabilité ok</field>
+			<field name="kind">function</field>
+			<field name="action">action_solvabilite_ok()</field>
+		</record>
+		
+		<record id="act_capacite_ok" model="workflow.activity">
+			<field name="wkf_id" ref="demande_location_entrepreneur_wkf"/>
+			<field name="name">Contrôle capacité kiosque ok</field>
+			<field name="kind">function</field>
+			<field name="action">action_capacite_ok()</field>
+		</record>
+		
+		<!-- <record id="act_preparation_materiel" model="workflow.activity">
+			<field name="wkf_id" ref="demande_location_entrepreneur_wkf"/>
+			<field name="name">Préparation de matétriel</field>
+			<field name="kind">function</field>
+			<field name="action">action_preparation_materiel_ok()</field>
+		</record>
+		<record id="act_test_materiel" model="workflow.activity">
+			<field name="wkf_id" ref="demande_location_entrepreneur_wkf"/>
+			<field name="name">Testé</field>
+			<field name="kind">function</field>
+			<field name="action">action_test_materiel_ok()</field>
+		</record> -->
+		<!--End workflow activity-->
+		
+		<!-- workflow transition-->
+		<record id="act_draft2_to_act_solvabilite_ok" model="workflow.transition">
+            <field name="act_from" ref="act_draft2"/>
+            <field name="act_to" ref="act_solvabilite_ok"/>
+            <field name="signal">action_solvabilte_ok</field>
+        </record>
+        
+        <record id="act_solvabilite_ok_to_act_draft2" model="workflow.transition">
+            <field name="act_from" ref="act_solvabilite_ok"/>
+            <field name="act_to" ref="act_draft2"/>
+            <field name="signal">action_annuler_solvabilite_ok</field>
+        </record>      
+        
+        <record id="act_solvabilite_ok_to_act_capacite_ok" model="workflow.transition">
+            <field name="act_from" ref="act_solvabilite_ok"/>
+            <field name="act_to" ref="act_capacite_ok"/>
+            <field name="signal">action_capacite_ok</field>
+        </record>
+        
+        <record id="act_capacite_ok_to_act_solvabilite_ok" model="workflow.transition">
+            <field name="act_from" ref="act_capacite_ok"/>
+            <field name="act_to" ref="act_solvabilite_ok"/>
+            <field name="signal">action_annuler_capacite_ok</field>
+        </record>
+        
+        <!-- <record id="act_capacite_ok_to_act_preparation_materiel" model="workflow.transition">
+            <field name="act_from" ref="act_capacite_ok"/>
+            <field name="act_to" ref="act_preparation_materiel"/>
+            <field name="signal">action_preparation_materiel</field>
+        </record>
+        
+        <record id="act_preparation_materiel_to_act_capacite_ok" model="workflow.transition">
+            <field name="act_from" ref="act_preparation_materiel"/>
+            <field name="act_to" ref="act_capacite_ok"/>
+            <field name="signal">action_annuler_preparation_materiel</field>
+        </record>
+        
+        <record id="act_preparation_materiel_to_act_test_materiel" model="workflow.transition">
+            <field name="act_from" ref="act_preparation_materiel"/>
+            <field name="act_to" ref="act_test_materiel"/>
+            <field name="signal">action_tester</field>
+        </record>
+        
+        <record id="act_test_materiel_to_act_preparation_materiel" model="workflow.transition">
+            <field name="act_from" ref="act_test_materiel"/>
+            <field name="act_to" ref="act_preparation_materiel"/>
+            <field name="signal">action_annuler_test</field>
+        </record> -->
+		<!--End workflow transition-->
+		<!--End workflow -->
+	</data>
+</odoo>

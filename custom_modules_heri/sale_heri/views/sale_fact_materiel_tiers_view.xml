@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+
+		<!-- Facturation tiers form -->
+		<record model="ir.ui.view" id="facturation_tiers_form_view">
+			<field name="name">Facturation des ventes par Heri de materiels aux tiers</field>
+			<field name="model">sale.order</field>
+			<field name="mode">primary</field>
+			<field name="inherit_id" ref="sale_order_form_view_advanced"/>
+			<field name="arch" type="xml"> 
+				<xpath expr="//field[@name='partner_id']" position="after">
+					<field 
+					    name="location_id" />
+				</xpath>
+				<xpath expr="//field[@name='partner_id']" position="after">
+					<field 	name="facturation_type" invisible="1"/>
+				</xpath>
+				<xpath expr="//field[@name='state']" position="replace">
+					<field 	name="state"
+							widget="statusbar" 
+					    	statusbar_visible="draft,breq_stock"/>
+				</xpath>
+				<xpath expr="//field[@name='order_line']/tree//field[@name='product_uom_qty']" position="after">
+					<field name="qte_prevu" />
+				</xpath>
+				<xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="attributes">
+		    		<attribute name="invisible">1</attribute>
+		    	</xpath>
+				 <!--bouton pour le workflow facturation tiers -->
+				<xpath expr="//field[@name='state']" position="before">
+					<button 
+			      	    string="Genener BreqStock" 
+			      	    name="action_generer_breq_stock"
+			      	    groups="purchase_heri.group_special_manager_heri"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('draft')),('facturation_type', 'not in', ('facturation_tiers'))]}"
+			      	 />
+				<!--End bouton pour le workflow facturation tiers -->
+		      	 
+				</xpath>
+				
+				<xpath expr="//div[@name='button_box']//button[@name='action_view_invoice']" position="after">
+				 	<button type="object"
+	                            name="action_breq_stock_lie"
+	                            attrs="{'invisible': ['|',('state', 'not in', ('breq_stock'))]}"
+	                            class="oe_stat_button"
+	                            icon="fa-truck">
+	                            <field name="breq_stock_count"  widget="statinfo" string="Budget Request Stock" help="Breq stock lie"/>
+	                            <field name="breq_stock_ids" invisible="1"/>
+	                </button>
+                </xpath>
+                <xpath expr="//div[@name='button_box']//button[@name='action_view_invoice']" position="replace">
+			      <button name="action_view_invoice"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            invisible="1">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                  </button>
+                </xpath>
+                <xpath expr="//div[@name='button_box']//button[@name='action_view_invoice']" position="after">
+			      <button name="action_sale_heri_lie_facture"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                            <field name="invoice_count" widget="statinfo" string="Facture"/>
+                  </button>
+                </xpath>
+
+			</field>
+		</record>
+		<record model="ir.actions.act_window" id="action_facturation_tiers">
+	       	<field name="name">Facturation des ventes par Heri de materiels aux tiers</field>
+	       	<field name="res_model">sale.order</field>
+			<field name="domain">[('facturation_type','=','facturation_tiers')]</field>  	
+			<field name="context">{'default_facturation_type': 'facturation_tiers'}</field> 
+	       	<field name="view_type">form</field>
+	       	<field name="view_mode">tree,form</field>
+	       	<field name="help" type="html">
+          	<p class="oe_view_nocontent_create">
+              Cliquer ici pour créer une facturation aux tiers.
+          	</p>
+        </field>
+	   	</record>
+	   	<record id="action_facturation_tiers_tree_view" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="facturation_redevance_tree"/>
+            <field name="act_window_id" ref="action_facturation_tiers"/>
+        </record>
+
+        <record id="action_facturation_tiers_form_view" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="facturation_tiers_form_view"/>
+            <field name="act_window_id" ref="action_facturation_tiers"/>
+		</record>
+		<menuitem id="menu_facture_tiers" name="Facturation des ventes par Heri de materiels aux tiers" parent="sales_team.menu_sales" action="action_facturation_tiers" sequence="2"/>
+			
+	</data>
+</odoo>

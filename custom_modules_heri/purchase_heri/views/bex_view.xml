@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+	    <!-- Budget Expense Report form -->
+		<record id="view_picking_bex_form" model="ir.ui.view">
+            <field name="name">budget.expense.form</field>
+            <field name="model">budget.expense.report</field>
+            <field eval="12" name="priority"/>
+            <field name="arch" type="xml">
+                <form string="Budget Expensive Report Achat">
+                <header>
+                    <button name="attente_hierarchie" string="Envoyer au supérieur hiérarchique" type="object" class="oe_highlight"
+			    	    attrs="{'invisible': ['|',('state', 'not in', ('draft')), ('is_creator', '=', False)]}"/>
+			    	<button name="annuler_attente_hierarchie" string="Annuler" type="object" class="oe_highlight"
+			    	    attrs="{'invisible': ['|',('state', 'not in', ('attente_hierarchie')), ('is_manager', '=', False)]}"/>
+			    	<button name="hierarchie_ok" string="Validation supérieur hierarchique" type="object" class="oe_highlight"
+			    	    attrs="{'invisible': ['|',('state', 'not in', ('attente_hierarchie')), ('is_manager', '=', False)]}"/>
+			    	<button name="annuler_hierarchie_ok" string="Annuler" type="object" class="oe_highlight"
+			    	    attrs="{'invisible': [('state', 'not in', ('hierarchie_ok'))]}" 
+			    	    groups="purchase_heri.group_finance_heri"/>
+			    	<button name="comptabiliser" attrs="{'invisible': [('state', 'not in', ('hierarchie_ok'))]}" string="Validation finance" type="object" class="oe_highlight"
+			    	    groups="purchase_heri.group_finance_heri"/>
+			    	<button name="annuler_comptabiliser" invisible ="1" string="Annuler" type="object" class="oe_highlight"
+			    	    groups="purchase_heri.group_finance_heri"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,attente_hierarchie,hierarchie_ok,comptabilise" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object"
+                            name="action_view_be"
+                            class="oe_stat_button"
+                            icon="fa-truck" attrs="{'invisible':['|',('state', 'not in', ('comptabilise')),('be_ids','=',[])]}">
+                            <field name="be_lie_count" widget="statinfo" string="Bon d'entrée" help="Bon d'entrée lié au Budget Expense"/>
+                            <field name="be_ids" invisible="1"/>
+                        </button>
+                   	</div>
+                   	<label string="Budget Expensive Report Achat"/>
+                    <h1 class="hidden-xs">
+                        <field name="name" attrs="{'invisible': [('name','=','/')]}" readonly="1"/>
+                    </h1>
+                    <group class="hidden-xs">
+                        <group>
+                            <field name="breq_id" context="{'form_view_ref':'purchase.purchase_order_form'}"/>
+                            <field name="partner_id" string="Fournisseur"/>
+                            <field name="location_id" invisible="1"/>
+                            <field name="location_dest_id" invisible="1"/>
+							
+							<field name="purchase_type" invisible="1"/>
+							<field name="employee_id" />
+							<field name="department_id" />
+							<field name="objet" />
+							<field name="section" />
+							<field name="nature" />
+							<field name="manager_id" invisible="1"/>
+							<field name="is_manager" invisible="1"/>
+							<field name="currency_id" />
+							<field name="is_creator" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="origin" placeholder="e.g. Breq000032" class="oe_inline"/>
+							
+							
+							<field name="change_state_date" />
+							<field name="budgetise" string="BUDGETISE" widget="monetary" options="{'currency_field': 'currency_id'}" />
+							<field name="cumul" string="CUMULE REAL + ENGAG." widget="monetary" options="{'currency_field': 'currency_id'}" />
+							<field name="solde_rembourser" widget="monetary" string="SOLDE DE BUDGET" options="{'currency_field': 'currency_id'}" />
+							<field name="journal_id" widget="selection" />
+							<field name="remise" />
+							<field name="observation" />
+							<field name="currency_en_ar" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+						<page string="Lignes Budget Expense Report">
+					        <field name="bex_lines">
+		                    	<tree editable="bottom">
+		                    	    <field name="purchase_type" invisible="1" />
+		                    	    <field name="product_id"/>
+		                    	    <field name="product_qty"/>
+		                    	    <field name="qty_done" string="Qté Reçue"/>
+		                    	    <field name="prix_unitaire" readonly="1"/>
+						    		<field name="montant_br" />
+						    		<field 
+						    		    name="taxes_id" 
+						    		    attrs="{'readonly': [('purchase_type', '!=', 'purchase_import')]}"
+						    		    widget="many2many_tags" 
+						    		    domain="[('type_tax_use','=','purchase')]" 
+						    		    context="{'default_type_tax_use': 'purchase'}" invisible="1" />
+						    		<field name="montant_realise" />
+						    		<field name="montant_realise_taxe" />
+			                    </tree>
+		                	</field>
+					    </page>
+						<page string="Information suppléméntaire" name="extra">
+                            <group>
+                                <group>
+                                    <field name="move_type"/>
+                                    <field name="picking_type_id"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+					<group>
+						 <group class="oe_subtotal_footer oe_right" string="Montant En Ar" attrs="{'invisible': [('purchase_type', 'not in', ('purchase_import'))],'readonly': [('state', 'in', ('comptabilise'))]}">	        	    	
+		                   <field name="amount_untaxed_en_ar" widget="monetary" options="{'currency_field': 'currency_en_ar'}" attrs="{'readonly': [('state', 'in', ('comptabilise'))]}"/>
+		                   <field name="amount_tax_en_ar" widget="monetary" options="{'currency_field': 'currency_en_ar'}" readonly="1"/>
+		                   <div class="oe_subtotal_footer_separator oe_inline">
+		                       <label for="amount_total_en_ar"/>
+		                   </div>
+		                   <field name="amount_total_en_ar" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_en_ar'}"/>
+		                </group>
+				        <group class="oe_subtotal_footer oe_right" string="BEX">	        	    	
+		                   <field name="amount_untaxed_bex" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                   <field name="amount_tax_bex" widget="monetary" options="{'currency_field': 'currency_id'}" />
+		                   <div class="oe_subtotal_footer_separator oe_inline">
+		                       <label for="amount_total_bex"/>
+		                   </div>
+		                   <field name="amount_total_bex" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                </group>
+				        <group class="oe_subtotal_footer oe_right" string="BReq">	        	    	
+		                   <field name="amount_untaxed_breq" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                   <field name="amount_tax_breq" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                   <div class="oe_subtotal_footer_separator oe_inline">
+		                       <label for="amount_total_breq"/>
+		                   </div>
+		                   <field name="amount_total_breq" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+		                </group>
+		        	</group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+        <!-- Fin form bex -->
+        
+        <!--Budget Expenses Report tree -->
+        <record id="budget_expenses_tree" model="ir.ui.view">
+            <field name="name">budget.expenses.tree</field>
+            <field name="model">budget.expense.report</field>
+            <field name="arch" type="xml">
+                <tree  string="Budget Expenses Report list">
+                    <field name="name" string="Nom"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                    <field name="location_dest_id" invisible="1"/>
+                    <field name="partner_id" string="Fournisseur"/>
+                    <field name="date"/>
+                    <field name="group_id" invisible="1"/>
+                    <field name="amount_untaxed_breq" sum="Total Untaxed amount" string="Total HT" widget="monetary"/>
+                    <field name="amount_total_breq" sum="Total amount" string="Total BReq" widget="monetary"/>
+                    <field name="change_state_date" invisible="1"/>
+                    <field name="state"/>
+                    <field name="picking_type_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Fin Budget Expenses Report tree -->
+        
+        <!-- Budget Expenses Report action -->
+        <record id="action_bex_report" model="ir.actions.act_window">
+            <field name="name">Budget Expenses Report</field>
+            <field name="res_model">budget.expense.report</field>
+            <field name="view_id" ref="budget_expenses_tree"/>
+            <field name="domain">[('state','in',('draft','attente_hierarchie','hierarchie_ok','comptabilise'))]</field>
+            <field name="context">{'default_state':'draft','state':'draft'}</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+             <field name="help" type="html">
+             <p class="oe_view_nocontent_create">
+                 Click here to create a new Budget Expenses Report.
+             </p>
+           </field>
+        </record>
+        <record id="action_heri_tree_bex" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="budget_expenses_tree"/>
+            <field name="act_window_id" ref="action_bex_report"/> 
+        </record>
+        <record id="action_heri_form_bex" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_picking_bex_form"/>
+            <field name="act_window_id" ref="action_bex_report"/> 
+        </record>
+        <!-- Fin Budget Expenses Report action -->
+        
+   		<!-- Bex avec inherit name différent-->
+		<!-- <record id="action_heri_1" model="ir.actions.act_window">
+            <field name="name">heri picking test</field>
+            <field name="res_model">budget.expense.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="budget_expenses_tree"/>
+        </record>
+        
+		<record id="action_heri_tree_1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="budget_expenses_tree"/>
+            <field name="act_window_id" ref="action_heri_1"/>
+        </record>
+
+        <record id="action_heri_form_1" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_picking_bex_form"/>
+            <field name="act_window_id" ref="action_heri_1"/>
+        </record> -->
+        <!-- Fin Bex avec inherit name différent-->
+        
+        <!-- Menus -->
+        <menuitem id="menu_bex" parent="purchase.menu_procurement_management" action="action_bex_report" name="Budget Expenses Report" sequence="4"/>
+        <!-- <menuitem id="menu_heri1" parent="stock.menu_stock_config_settings" action="action_heri_1" name="Bex avec inherit name différent" sequence="2"/> -->
+		<!-- Fin Menus -->
+	</data>
+</odoo>

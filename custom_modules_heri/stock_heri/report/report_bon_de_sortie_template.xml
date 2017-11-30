@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <template id="report_sortie_document">
+        <t t-call="report.html_container">
+            <t t-call="report.external_layout">
+                <t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang})" />
+                <div class="page">
+                    <style>
+                        .tableau {
+			    			width: 100%;
+			    			height: 100px;
+					    	border:1px solid;
+					    	font-family: Arial, "Arial Black",Arial, Verdana, sans-serif;
+					    	}
+				    	.duplicata {
+				    	    color:red;
+			    			border:3px solid;
+					    	text-align:center;
+					    	width:250px;
+					    	float:right;
+					    	border-radius:10px;
+					    	}
+				    	.td_footer {padding:1%;border:1px solid;}
+                    </style>
+                    
+					<div class="text-center">
+                    	<h1>Bon de Sortie N° <span t-field="o.name"/></h1> 
+                    </div>
+                    
+                   <t t-if="o.is_duplicata">
+                      	<div class="duplicata">
+                      		<h1>DUPLICATA</h1>
+                   		</div>
+                   </t>
+
+                    <span><strong>N° Budget Request :</strong>  <span t-field="o.origin"/><strong> Du : </strong><span t-field="o.min_date"/> </span><br/> 
+                    <span><strong>Section Analytique d'Imputation :</strong>  <span t-field="o.section"/></span><br/> 
+                    <span><strong>Magasin d'origine :</strong>  <span t-field="o.location_id"/></span><br/> 
+                    <span><strong>Imprimé le</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y')"/></span> <br/> 
+                    <table class="table table-condensed mt48" t-if="o.pack_operation_ids">
+                        <t t-set="has_serial_number" t-value="o.pack_operation_ids.filtered('pack_lot_ids')" groups="stock.group_production_lot"/>
+                        <thead>
+                            <tr>
+                                <!-- <th><strong>Ref Article</strong></th> -->
+                                <th><strong>Libellé/Désignation</strong></th>
+                                <th><strong>Quantité</strong></th>
+                                <th><strong>Unité</strong></th>
+                                <th><strong>PU</strong></th>
+                                <th><strong>Montant (Ariary)</strong></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.pack_operation_ids" t-as="pack_operation">
+                                <!-- <td>
+                                    <span t-field="pack_operation.product_id.default_code"/>
+                                    <t t-if="not pack_operation.product_id and pack_operation.package_id">
+                                        <span  t-field="pack_operation.package_id"/>
+                                    </t>
+                                </td> -->
+                                <td>
+                                	<span t-field="pack_operation.product_id"/>
+                                    <t t-if="not pack_operation.product_id and pack_operation.package_id">
+                                        <span  t-field="pack_operation.package_id"/>
+                                    </t>
+                                </td>
+                                <td class="text-right">
+                           	  		<span t-field="pack_operation.ordered_qty"/>
+                                </td>
+                                <td>
+                                	<span t-field="pack_operation.product_uom_id"/>
+                                </td>
+                                <td class="text-right">
+                                	<span t-field="pack_operation.price_unit"/>
+                                </td>
+         						<td class="text-right">
+                                	<span t-field="pack_operation.price_subtotal"/>
+                                </td>
+                            </tr>
+                        </tbody>
+					</table>
+               		
+               		<div class="row">
+               		 	<div class="col-xs-4 pull-right">
+	             			<table class="table table-condensed">
+		                        <tr class="border-black">
+		                            <td><strong>Total</strong></td>
+		                            <td class="text-right">
+		                                <span t-field="o.amount_untaxed"
+		                                    t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+		                            </td>
+		                        </tr>
+	                    	</table>
+                		</div>
+            		</div>  
+            	<table class="tableau">
+            		<tr>
+            			<td class="td_footer text-left">
+            				<strong style="text-decoration: underline;">Observations : </strong>
+            			</td>
+            			<td class="td_footer text-center">
+            				<strong>Visa et Nom Magasinier</strong><br/><br/>
+            				<span t-field="o.magasinier_id"/>
+            			</td>
+            			<td class="td_footer text-center">
+            				<strong>Visa et Nom Demandeur</strong><br/><br/>
+            				<span t-field="o.employee_id"/>
+            			</td>
+            		</tr>
+            	</table>
+           	 <span t-esc="set_duplicata(o)"/>	
+             </div>
+            </t>
+         </t>
+    </template>
+
+    <template id="report_bon_de_sortie_template">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="stock_heri.report_sortie_document" t-lang="o.partner_id.lang"/>
+        </t>
+    </template>
+
+</odoo>

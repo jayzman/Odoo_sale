@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+	    <!-- Popup mode de paiement -->
+   		<record model="ir.ui.view" id="view_mode_paiement_form">
+			<field name="name">mode.paiement.form</field>
+			<field name="model">mode.paiement</field>
+			<field name="arch" type="xml"> 
+				<form string="Mode de paiement" version="7">
+                    <sheet>
+                        <group>
+                            <field name="mode_paiement"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string='Valider' name="valider_mode_paiement" type="object" class="btn-primary"/>
+                        <button string="Annuler" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+			</field>
+		</record>
+		<!-- Fin popup mode de paiement -->
+		
+		<!-- Action popup mode de paiement -->
+		<record id="action_mode_paiement" model="ir.actions.act_window">
+            <field name="name">mode.paiement.form</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mode.paiement</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_mode_paiement_form"/>
+            <!-- <field name="context">{'default_mode_paiement': journal_id}</field> -->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a new journal account. 
+              </p>
+            </field>
+        </record>
+	    <!-- Fin action popup mode de paiement -->
+    </data>
+ </odoo>

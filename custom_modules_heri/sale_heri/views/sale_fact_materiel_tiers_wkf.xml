@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+	<data>
+		<!-- workflow -->
+		<record id="sale_facturation_tiers" model="workflow">
+			<field name="name">Facturation des ventes par Heri de materiels aux tiers</field>
+			<field name="osv">sale.order</field>
+			<field name="on_create">True</field>
+		</record>
+		
+		<!-- workflow activity-->
+		<record id="act_etab_devis" model="workflow.activity">
+			<field name="wkf_id" ref="sale_facturation_tiers"/>
+			<field name="flow_start">True</field>
+			<field name="name">Etablissement de devis</field>
+			<field name="kind">dummy</field>
+		</record>
+		
+		<record id="act_etab_breq_stock" model="workflow.activity">
+			<field name="wkf_id" ref="sale_facturation_tiers"/>
+			<field name="name">Generation Breq Stock</field>
+			<field name="kind">function</field>
+			<field name="action">generation_breq_stock()</field>
+		</record>
+		<!-- End workflow activity-->
+		
+		<!--workflow transition-->
+		<record id="act_etab_devis_to_generation_breq_stock" model="workflow.transition">
+            <field name="act_from" ref="act_etab_devis"/>
+            <field name="act_to" ref="act_etab_breq_stock"/>
+            <field name="signal">action_generer_breq_stock</field>
+        </record>
+		
+	</data>
+</odoo>

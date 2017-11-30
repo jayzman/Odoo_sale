@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<odoo>
+  <data>
+    <!-- etape candidature -->  
+	<record model="stock.warehouse" id="entrepot_tsiadana1">
+        <field name="name">Tsiadana1</field>
+        <field name="code">TSDN1</field>
+    </record>  
+    <record model="stock.warehouse" id="entrepot_tsiadana2">
+        <field name="name">Tsiadana2</field>
+        <field name="code">TSDN2</field>
+    </record>
+    <record model="stock.warehouse" id="entrepot_tsiadana3">
+        <field name="name">Tsiadana3</field>
+        <field name="code">TSDN3</field>
+    </record>
+    <record model="stock.warehouse" id="entrepot_fianar1">
+        <field name="name">Fianar 1</field>
+        <field name="code">FNR1</field>
+    </record>
+    <record model="stock.warehouse" id="entrepot_fianar2">
+        <field name="name">Fianar 2</field>
+        <field name="code">FNR2</field>
+    </record>
+    <record model="stock.warehouse" id="entrepot_analavory">
+        <field name="name">Analavory</field>
+        <field name="code">AVORY</field>
+    </record>
+    <record model="stock.warehouse" id="entrepot_tsididy">
+        <field name="name">Tsididy</field>
+        <field name="code">TDIDY</field>
+    </record>
+    <record model="stock.warehouse" id="entrepot_kiosque1">
+        <field name="name">Kiosque 1</field>
+        <field name="code">KSQ1</field>
+    </record>
+    <record model="ir.sequence" id="sequence_breq_stock">
+        <field name="name">BReq stock out</field>
+        <field name="implementation">standard</field>
+        <field name="prefix">BS</field>
+        <field name="padding">5</field>
+        <field name="number_increment">1</field>
+    </record>
+    <record id="stock_location_virtual_heri" model="stock.location">
+            <field name="name">Emplacement virtuel HERi</field>
+            <field name="location_id" ref="stock.stock_location_locations_virtual"/>
+            <field name="usage">internal</field>
+            <field name="company_id"></field>
+      </record>
+    <record model="stock.picking.type" id="type_preparation_heri">
+        <field name="name">Sortie de stock</field>
+        <field name="sequence_id" ref="purchase_heri.sequence_breq_stock"/>
+        <field name="code">outgoing</field>
+        <field name="default_location_dest_id" ref="purchase_heri.stock_location_virtual_heri"/>
+    </record>
+  </data>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+	<data>
+			<report
+	            string="Bon de sortie"
+	            id="action_report_BS"
+	            model="stock.picking"
+	            report_type="qweb-pdf"
+	            name="stock_heri.report_bon_de_sortie_template"
+	            file="stock_heri.report_bon_de_sortie_template"
+	            menu="False"
+	        />
+	</data>
+</odoo> 

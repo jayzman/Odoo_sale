@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data noupdate="1">
+        <record id="cron_date_facturation_redevance" model="ir.cron">
+            <field name="name">Facturation redevance cron</field>
+            <field name="active" eval="True" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="numbercall">-1</field>
+            <field name="doal">0</field>
+            <field name="nextcall" >2017-11-23 14:30:00</field>
+            <field name="model" eval="'res.calendar'" />
+            <field name="function" eval="'_compute_date_faturation_redevance'" />
+            <field name="args" eval="" />
+            <field name="priority" eval="0" />
+        </record>
+        <record model="res.calendar" id="calendrier_facturation_redevance">
+	        <field name="name">Calendrier facturation redevance</field>
+    	</record>
+	</data>
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<odoo>
+  <data> 
+	<record model="product.product" id="product_frais_base">
+        <field name="name">Frais de base</field>
+        <field name="type">service</field>
+		<field name="sale_ok">True</field>
+		<field name="purchase_ok">True</field>
+    </record>  
+    <record model="res.calendar" id="calendrier_facturation_redevance">
+        <field name="name">Calendrier facturation redevance</field>
+        <field name="last_month"></field>
+		<field name="current_month"></field>
+    </record>  
+  </data>
+</odoo>

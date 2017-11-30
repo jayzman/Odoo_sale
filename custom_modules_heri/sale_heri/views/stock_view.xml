@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<!-- Debut bon de sortie facturation form view -->
+		<record id="view_bs_stock_form_facturation_tiers_inherit" model="ir.ui.view">
+            <field name="name">stock.sortie.facture.form</field>
+            <field name="model">stock.picking</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="stock_heri.view_picking_form_advanced"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//form" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath> 
+                <field name="state" position="replace">
+				    <field name="state" widget="statusbar" statusbar_visible="attente_magasinier,attente_logistique,assigned,done" />
+				</field>
+				<xpath expr="//button[@name='do_stock_transfer']" position="attributes">
+					<attribute name="groups">purchase_heri.group_magasinier_heri</attribute>
+					<attribute name="invisible">1</attribute>
+				</xpath>
+				<xpath expr="//button[@name='action_cancel']" position="attributes">
+					<attribute name="attrs">{'invisible': [('state','in',('done','attente_logistique'))]}</attribute>
+					<attribute name="groups">purchase_heri.group_logistique_heri</attribute>
+				</xpath>
+				<xpath expr="//header" position="inside">		
+				    <button name="aviser_logistique" string="Pour visa" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('attente_magasinier')),('mouvement_type','not in',('bs'))]}" groups="purchase_heri.group_magasinier_heri" type="object"/>
+				    <button name="action_aviser_magasinier_bs" string="Vu" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('attente_logistique')), ('mouvement_type','not in',('bs'))]}" groups="purchase_heri.group_logistique_heri" type="object"/>
+				</xpath>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_bon_de_sortie_lie_facture_tiers">
+	       	<field name="name">Bon de sortie en stock lié</field>
+	       	<field name="res_model">stock.picking</field>
+	       	<field name="domain">['&amp;',('breq_id','=',active_id),'&amp;',('mouvement_type','=','bs'),('state','!=','draft')]</field>  	
+	       	<field name="view_type">form</field>
+	       	<field name="view_mode">tree,form</field>
+	   	</record> 
+	   	
+	   	<record id="action_bon_sortie_tree_lie_facture_tiers" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="stock_heri.view_bon_sortie_sans_creer_tree"/>
+            <field name="act_window_id" ref="action_bon_de_sortie_lie_facture_tiers"/>
+        </record>
+        
+        <record id="action_bon_sortie_form_lie_facture_tiers" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_bs_stock_form_facturation_tiers_inherit"/>
+            <field name="act_window_id" ref="action_bon_de_sortie_lie_facture_tiers"/>
+		</record>
+		
+		<!-- Debut bon de cession intern facturation form view -->
+		<record id="view_bci_stock_form_facturation_entrepreneurs_inherit" model="ir.ui.view">
+            <field name="name">bon.cession.interne.form</field>
+            <field name="model">stock.picking</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="stock_heri.view_picking_form_advanced"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//form" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath> 
+                <field name="state" position="replace">
+				    <field name="state" widget="statusbar" statusbar_visible="attente_magasinier,attente_logistique,assigned,done" />
+				</field>
+				<xpath expr="//button[@name='do_stock_transfer']" position="attributes">
+					<attribute name="groups">purchase_heri.group_magasinier_heri</attribute>
+					<attribute name="invisible">1</attribute>
+				</xpath>
+				<xpath expr="//field[@name='location_id']" position="replace">
+					<field name="location_id" string="Magasin d'Origine"/>
+				</xpath>
+				<xpath expr="//button[@name='action_cancel']" position="attributes">
+					<attribute name="attrs">{'invisible': [('state','in',('done','attente_logistique'))]}</attribute>
+					<attribute name="groups">purchase_heri.group_logistique_heri</attribute>
+				</xpath>
+				<xpath expr="//header" position="inside">	
+					<button name="do_stock_transfer" string="Valider" class="oe_highlight" attrs="{'invisible': [('state','not in',('assigned'))]}" groups="purchase_heri.group_magasinier_heri" type="object"/>	
+				    <button name="aviser_logistique" string="Pour visa" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('attente_magasinier')),('mouvement_type','not in',('bci'))]}" groups="purchase_heri.group_magasinier_heri" type="object"/>
+				    <button name="action_aviser_magasinier_bs" string="Vu" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('attente_logistique')), ('mouvement_type','not in',('bci'))]}" groups="purchase_heri.group_logistique_heri" type="object"/>
+				</xpath>
+            </field>
+        </record>
+		<!-- action bci lie budget request stock facturation par heri entrepreneurs -->
+		<record model="ir.actions.act_window" id="action_bon_de_cession_lie_facture_entrepreneurs">
+	       	<field name="name">Bon de cession interne lié</field>
+	       	<field name="res_model">stock.picking</field>
+	       	<field name="domain">['&amp;',('breq_id','=',active_id),'&amp;',('mouvement_type','=','bci'),('state','!=','draft')]</field>  	
+	       	<field name="view_type">form</field>
+	       	<field name="view_mode">tree,form</field>
+	   	</record> 
+	   	
+	   	<record id="action_bon_cession_tree_lie_entrepreneurs" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="stock_heri.view_bon_sortie_sans_creer_tree"/>
+            <field name="act_window_id" ref="action_bon_de_cession_lie_facture_entrepreneurs"/>
+        </record>
+        
+        <record id="action_bon_cession_form_lie_entrepreneurs" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_bci_stock_form_facturation_entrepreneurs_inherit"/>
+            <field name="act_window_id" ref="action_bon_de_cession_lie_facture_entrepreneurs"/>
+		</record>
+		<!-- action bci et bs lie budget request stock facturation par entrepreneurs -->
+		<record id="view_bci_et_bs_stock_form_facturation_entrepreneurs_inherit" model="ir.ui.view">
+            <field name="name">bon.cession.interne.form</field>
+            <field name="model">stock.picking</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="stock_heri.view_picking_form_advanced"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//form" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath> 
+                <field name="state" position="replace">
+				    <field name="state" widget="statusbar" statusbar_visible="attente_magasinier,attente_logistique,assigned,done" />
+				</field>
+				<xpath expr="//button[@name='do_stock_transfer']" position="attributes">
+					<attribute name="groups">purchase_heri.group_magasinier_heri</attribute>
+					<attribute name="invisible">1</attribute>
+				</xpath>
+				<xpath expr="//field[@name='location_id']" position="replace">
+					<field name="location_id" attrs="{'readonly': [('mouvement_type','in',('bs'))]}" groups="purchase_heri.attente_logistique" string="Magasin d'Origine"/>
+				</xpath>
+				<xpath expr="//button[@name='action_cancel']" position="attributes">
+					<attribute name="attrs">{'invisible': [('state','in',('done','attente_logistique'))]}</attribute>
+					<attribute name="groups">purchase_heri.group_logistique_heri</attribute>
+				</xpath>
+				<xpath expr="//header" position="inside">	
+					<button name="do_stock_transfer" string="Valider" class="oe_highlight" attrs="{'invisible': [('|','state','not in',('assigned'),('mouvement_type','not in',('bci')))]}" groups="purchase_heri.group_magasinier_heri" type="object"/>	
+				    <button name="aviser_logistique" string="Pour visa" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('attente_magasinier')),('mouvement_type','not in',('bci','bs'))]}" groups="purchase_heri.group_magasinier_heri" type="object"/>
+				    <button name="action_aviser_magasinier_bs" string="Vu" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('attente_logistique')), ('mouvement_type','not in',('bci'))]}" groups="purchase_heri.group_logistique_heri" type="object"/>
+					<button name="action_aviser_call_center_bs" string="Vu" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('attente_logistique')), ('mouvement_type','not in',('bs'))]}" groups="purchase_heri.group_logistique_heri" type="object"/>
+					<button name="action_validation_call_center_bs" string="Valider" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('attente_call_center')), ('mouvement_type','not in',('bs'))]}" groups="purchase_heri.group_call_center_heri" type="object"/>						
+				</xpath>
+            </field>
+        </record>
+		<!-- action bci et bs lie budget request stock facturation par entrepreneurs -->
+		<record model="ir.actions.act_window" id="action_bon_de_cession_lie_facture_entrepreneurs_1">
+	       	<field name="name">Bon de cession interne lié</field>
+	       	<field name="res_model">stock.picking</field>
+	       	<field name="domain">['&amp;',('breq_id','=',active_id),('state','!=','draft')]</field>  	
+	       	<field name="view_type">form</field>
+	       	<field name="view_mode">tree,form</field>
+	   	</record> 
+	   	
+	   	<record id="action_bon_cession_tree_lie_entrepreneurs_1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="stock_heri.view_bon_sortie_sans_creer_tree"/>
+            <field name="act_window_id" ref="action_bon_de_cession_lie_facture_entrepreneurs_1"/>
+        </record>
+        
+        <record id="action_bon_cession_form_lie_entrepreneurs_1" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_bci_et_bs_stock_form_facturation_entrepreneurs_inherit"/>
+            <field name="act_window_id" ref="action_bon_de_cession_lie_facture_entrepreneurs_1"/>
+		</record>
+	</data>
+</odoo>

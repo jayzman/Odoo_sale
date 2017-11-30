@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<!-- Ajout is_kiosque dans stock_location form -->
+		<record model="ir.ui.view" id="stock_location_heri_form_view">
+			<field name="name">stock.location.heri.form</field>
+			<field name="model">stock.location</field>
+			<field name="inherit_id" ref="stock.view_location_form"/>
+			<field name="arch" type="xml">
+			    <xpath expr="//field[@name='usage']" position="before">
+					<field name="is_kiosque"/>
+					<field name="date_contrat" required="1"/>
+					<field name="plus_une_redevance" invisible="1"/>
+					<field name="region_id" attrs="{'required': [('is_kiosque', '=', True)], 'invisible':[('is_kiosque', '=', False)]}"/>
+				</xpath>
+			</field>
+		</record>	
+		<!-- End Ajout is_kiosque dans stock_location form -->
+	</data>
+</odoo>

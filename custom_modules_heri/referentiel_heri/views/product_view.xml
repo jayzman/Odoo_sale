@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+	
+		<!-- Customer form -->
+		<record model="ir.ui.view" id="product_heri_form_view">
+			<field name="name">product.product.form</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="product.product_normal_form_view"/>
+			<field name="arch" type="xml">
+				<field name="type" position="after">
+					<field name="ref_fournisseur"/>
+					<field name="desc_fournisseur"/>
+					<field name="family"/>
+					<field name="nature_analytique"/>
+					<field name="stock"/>
+					<field name="security_seuil" attrs="{'invisible': [('type', '!=', ('product'))]}"/>
+					<field name="taxe_douane"/>
+				</field>
+				<field name="lst_price" position="before">
+					<field name="frais_type" widget="radio" attrs="{'invisible': [('type', '=', ('service'))]}"/>
+				</field>
+			</field>
+		</record>	
+		
+		<!-- Customer form -->
+		<record model="ir.ui.view" id="product_heri_form_view1">
+			<field name="name">product.product.form1</field>
+			<field name="model">product.template</field>
+			<field name="inherit_id" ref="product.product_template_form_view"/>
+			<field name="arch" type="xml">
+				<xpath expr="//page[@name='general_information']//group[@name='group_standard_price']//field[@name='uom_id']" position="replace">
+					<field name="uom_id" string="Unite de mesure Heri" groups="product.group_uom" options="{'no_create': True}"/>
+				</xpath>
+				<xpath expr="//page[@name='general_information']//group[@name='group_standard_price']//label" position="replace">
+					<label string="PUMP"/>
+				</xpath>
+			</field>
+		</record>	
+			
+		<!-- End Customer form -->
+
+		<record model="ir.actions.act_window" id="action_menu_product_family">
+	       <field name="name">Familles d'articles</field>
+	       <field name="res_model">product.family</field>
+	       <field name="view_type">form</field>
+	       <field name="view_mode">tree,form</field>
+	       <field name="help" type="html">
+	         <p class="oe_view_nocontent_create">
+	             Click here to create a new Article Family.
+	         </p>
+	       </field>
+	   	</record>
+	   	
+	   	<menuitem id="menu_product_family_purchase" parent="purchase.menu_purchase_config" name="Familles d'articles" action="action_menu_product_family" sequence="2"/>
+	</data>
+</odoo>

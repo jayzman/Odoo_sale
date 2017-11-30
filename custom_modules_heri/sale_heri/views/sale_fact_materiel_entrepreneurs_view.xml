@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		
+		<!-- Facturation tiers form -->
+		<record model="ir.ui.view" id="facturation_materiel_entrepreneur_form_view">
+			<field name="name">Facturation des ventes des matériel par les entrepreneurs</field>
+			<field name="model">sale.order</field>
+			<field name="mode">primary</field>
+			<field name="inherit_id" ref="sale_order_form_view_advanced"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='partner_id']" position="before">
+					<field 
+					    name="kiosque_id" domain="[('is_kiosque', '=', True)]" 
+					    attrs="{'required': [('facturation_type', '=', 'facturation_entrepreneurs')]}"/>
+				</xpath>
+				<xpath expr="//field[@name='partner_id']" position="replace">
+					<field 
+					    name="partner_id" string="Entrepreneur"/>
+				</xpath>
+				<xpath expr="//field[@name='partner_id']" position="before">
+					<field 
+					    name="partner_client_id" domain="[('customer','=',True)]" />
+					<field 
+					    name="sent_finance" invisible="1" />
+				</xpath>
+				<xpath expr="//field[@name='partner_id']" position="after">
+					<field 	name="facturation_type" invisible="1"/>
+					<field 	name="location_id" attrs="{'required': [('facturation_type', '=', 'facturation_entrepreneurs')]}"/>
+				</xpath>
+				<xpath expr="//field[@name='state']" position="replace">
+					<field name="state"
+							widget="statusbar" 
+					    	statusbar_visible="draft,breq_stock"/>
+				</xpath>
+				<xpath expr="//field[@name='order_line']/tree//field[@name='product_uom_qty']" position="after">
+					<field name="qte_prevu" />
+					<field name="qte_detenu_par_kiosque" />
+				</xpath>
+				<xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="attributes">
+		    		<attribute name="invisible">1</attribute>
+		    	</xpath>
+				
+				<!--bouton pour le workflow facturation tiers -->
+				<xpath expr="//field[@name='state']" position="before">
+					<button 
+			      	    string="Envoyer à la finance" 
+			      	    name="action_au_finance"
+			      	    type="object"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': [('sent_finance', '=', True)]}"
+			      	    groups="purchase_heri.group_call_center_heri"
+			      	 />
+					<button 
+			      	    string="Génerer le budget Request Stock" 
+			      	    name="generation_breq_stock"
+			      	    type="object"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('draft')),('sent_finance', '=', False)]}"
+			      	    groups="purchase_heri.group_magasinier_heri"
+			      	 />
+		      	 
+				</xpath>
+				 <xpath expr="//div[@name='button_box']//button[@name='action_view_invoice']" position="replace">
+			      <button name="action_view_invoice"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                            <field name="invoice_count" widget="statinfo" string="Facture"/>
+                  </button>
+                </xpath>
+				<xpath expr="//div[@name='button_box']//button[@name='action_view_invoice']" position="after">
+				 	<button type="object"
+	                            name="action_breq_stock_lie4"
+	                            attrs="{'invisible': ['|',('state', 'not in', ('breq_stock'))]}"
+	                            class="oe_stat_button"
+	                            icon="fa-folder">
+	                            <field name="breq_stock_count"  widget="statinfo" string="Budget Request Stock" help="Breq stock lie"/>
+	                            <field name="breq_stock_ids" invisible="1"/>
+	                </button>
+                </xpath>
+                <xpath expr="//div[@name='button_box']//button[@name='action_view_invoice']" position="after">
+			      <button name="action_sale_heri_lie_facture"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            invisible="1">
+                  </button>
+                </xpath>
+			</field>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_materiel_entrepreneur">
+	       	<field name="name">Facturation des ventes des matériel par les entrepreneurs</field>
+	       	<field name="res_model">sale.order</field>
+			<field name="domain">[('facturation_type','=','facturation_entrepreneurs')]</field>  	
+			<field name="context">{'default_facturation_type': 'facturation_entrepreneurs'}</field> 
+	       	<field name="view_type">form</field>
+	       	<field name="view_mode">tree,form</field>
+	       	<field name="help" type="html">
+	          	<p class="oe_view_nocontent_create">
+	              Cliquer ici pour créer une demande de facturation des ventes des matériel par les entrepreneurs.
+	          	</p>
+        	</field>
+	   	</record>
+	   	
+	   	<record id="action_materiel_entrepreneur_tree_view" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="facturation_redevance_tree"/>
+            <field name="act_window_id" ref="action_materiel_entrepreneur"/>
+        </record>
+
+        <record id="action_materiel_entrepreneur_form_view" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="facturation_materiel_entrepreneur_form_view"/>
+            <field name="act_window_id" ref="action_materiel_entrepreneur"/>
+		</record>
+		
+		<menuitem 
+		    id="menu_materiel_entrepreneur" 
+		    name="Facturation des ventes des matériel par les entrepreneurs" 
+		    parent="sales_team.menu_sales" 
+		    action="action_materiel_entrepreneur" 
+		    sequence="2"/>
+			
+	</data>
+</odoo>

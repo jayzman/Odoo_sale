@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mode_paiement_finance,mode.paiement.finance,purchase_heri.model_mode_paiement,group_finance_heri,1,1,1,0
+access_achat1,budget.expense.report,purchase_heri.model_budget_expense_report,group_achat_heri,1,1,1,0
+access_achat2,bex.line,purchase_heri.model_bex_line,group_achat_heri,1,1,1,0

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<!-- Sale order configuration form-->
+		<record model="ir.ui.view" id="view_purchase_configuration_inherit">
+			<field name="name">sale.order.config.view</field>
+			<field name="model">sale.config.settings</field>
+			<field name="inherit_id" ref="sales_team.view_sale_config_settings"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='sale_pricelist_setting']" position="before">
+					<field name="seuil_nbr_jour"/>
+					<field name="jour_etab_facture_redevance"/>
+				</xpath>
+            </field>
+		</record>
+		<!-- Fin Sale order configuration form-->
+	</data>
+</odoo>

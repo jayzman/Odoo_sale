@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<!-- workflow -->
+		<record id="purchase_heri_wkf" model="workflow">
+			<field name="name">workflow.purchase.heri</field>
+			<field name="osv">purchase.order</field>
+			<field name="on_create">True</field>
+		</record>
+		
+		<!-- activity -->
+		<record id="act_br" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="flow_start">True</field>
+			<field name="name">Elaboration du BR</field>
+			<field name="kind">function</field>
+			<field name="action">action_refus_dg_import()</field>
+		</record>
+		
+		<record id="act_attente_validation_import" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Attente validation import</field>
+			<field name="kind">function</field>
+			<field name="action">action_attente_validation_import()</field>
+		</record>
+		
+		<record id="act_aviser_finance" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Finance avisé</field>
+			<field name="kind">function</field>
+			<field name="action">action_aviser_finance()</field>
+		</record>
+		
+		<record id="act_send_ov_to_bank" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">OV envoyé à la banque</field>
+			<field name="kind">function</field>
+			<field name="action">action_send_to_bank()</field>
+		</record>
+		
+		<record id="act_br_lie" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Elaboration sous br</field>
+			<field name="kind">function</field>
+			<field name="action">action_br_lie_draft()</field>
+		</record>
+		
+		<record id="act_br_mere_ok" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">BR mere OK</field>
+			<field name="kind">function</field>
+			<field name="action">action_confirmed()</field>
+		</record>
+				
+		<record id="act_a_approuver" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">A approuver</field>
+			<field name="kind">function</field>
+			<field name="action">action_a_approuver()</field>
+		</record>
+		
+		<record id="act_refus_hierarchie" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Refus supérieur hierarchique</field>
+			<field name="kind">function</field>
+			<field name="action">action_refus_superieur()</field>
+		</record>
+		
+		<record id="act_non_prevu" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Non prévu</field>
+			<field name="kind">function</field>
+			<field name="action">action_non_prevu()</field>
+		</record>
+		
+		<record id="act_refus_finance" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Refus finance</field>
+			<field name="kind">function</field>
+			<field name="action">action_refus_finance()</field>
+		</record>
+		
+		<record id="act_attente_validation" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Attente de validation</field>
+			<field name="kind">function</field>
+			<field name="action">action_attente_validation()</field>
+		</record>
+		
+		<record id="act_refus_dg" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Refus direction générale</field>
+			<field name="kind">function</field>
+			<field name="action">action_refus_dg()</field>
+		</record>
+		
+		<record id="act_confirmed" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Confirmé</field>
+			<field name="kind">function</field>
+			<field name="action">action_confirmed()</field>
+		</record>
+		
+		<record id="act_prevu" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Prévu</field>
+			<field name="kind">dummy</field>
+			<field name="action"></field>
+		</record>
+		
+		<record id="act_wait_mode" model="workflow.activity">
+			<field name="wkf_id" ref="purchase_heri_wkf"/>
+			<field name="name">Attente Mode de paiement</field>
+			<field name="kind">function</field>
+			<field name="action">action_wait_mode()</field>
+		</record>
+		
+		<!-- transition -->
+		<record id="act_br_to_act_a_apporouver2" model="workflow.transition">
+            <field name="act_from" ref="act_br"/>
+            <field name="act_to" ref="act_attente_validation_import"/>
+            <field name="signal">action_a_approuver2</field>
+        </record>
+        
+        <record id="refus_dg_import_to_act_br" model="workflow.transition">
+            <field name="act_from" ref="act_attente_validation_import"/>
+            <field name="act_to" ref="act_br"/>
+            <field name="signal">action_refus_import_dg</field>
+        </record>
+	
+		<record id="act_a_apporouver2_to_finance" model="workflow.transition">
+            <field name="act_from" ref="act_attente_validation_import"/>
+            <field name="act_to" ref="act_aviser_finance"/>
+            <field name="signal">action_aviser_finance</field>
+        </record>
+		
+		<record id="refus_dg_import_to_act_act_br" model="workflow.transition">
+            <field name="act_from" ref="act_aviser_finance"/>
+            <field name="act_to" ref="act_attente_validation_import"/>
+            <field name="signal">action_cancel_finance</field>
+        </record>
+        
+		<record id="act_ov_to_bank" model="workflow.transition">
+            <field name="act_from" ref="act_aviser_finance"/>
+            <field name="act_to" ref="act_send_ov_to_bank"/>
+            <field name="signal">action_send_to_bank</field>
+        </record>
+        
+        <record id="act_cancel_bank_to_finance" model="workflow.transition">
+            <field name="act_from" ref="act_send_ov_to_bank"/>
+            <field name="act_to" ref="act_aviser_finance"/>
+            <field name="signal">action_cancel_bank</field>
+        </record>
+        
+        <record id="act_cancel_transit_to_bank" model="workflow.transition">
+            <field name="act_from" ref="act_br_lie"/>
+            <field name="act_to" ref="act_send_ov_to_bank"/>
+            <field name="signal">action_cancel_pr</field>
+        </record>
+        
+		<record id="act_bank_to_transit" model="workflow.transition">
+            <field name="act_from" ref="act_send_ov_to_bank"/>
+            <field name="act_to" ref="act_br_lie"/>
+            <field name="signal">action_br_lie</field>
+        </record>
+        
+        <record id="act_br_lie_to_ok" model="workflow.transition">
+            <field name="act_from" ref="act_br_lie"/>
+            <field name="act_to" ref="act_br_mere_ok"/>
+            <field name="signal">action_br_mere_ok</field>
+        </record>
+		
+		<record id="act_br_to_act_a_approuver" model="workflow.transition">
+            <field name="act_from" ref="act_br"/>
+            <field name="act_to" ref="act_a_approuver"/>
+            <field name="signal">action_a_approuver</field>
+        </record>
+		
+		<record id="act_a_approuver_to_act_non_prevu" model="workflow.transition">
+            <field name="act_from" ref="act_a_approuver"/>
+            <field name="act_to" ref="act_non_prevu"/>
+            <field name="signal">action_accorder</field>
+            <field name="condition">statut_budget == &quot;non_prevu&quot; or statut_budget == &quot;depasse&quot;</field>
+        </record>
+        
+		<record id="act_a_approuver_to_act_refus_hierarchie" model="workflow.transition">
+            <field name="act_from" ref="act_a_approuver"/>
+            <field name="act_to" ref="act_br"/>
+            <field name="signal">refus_superieur</field>
+        </record>
+        
+        <record id="act_non_prevu_to_act_refus_finance" model="workflow.transition">
+            <field name="act_from" ref="act_non_prevu"/>
+            <field name="act_to" ref="act_a_approuver"/>
+            <field name="signal">refus_finance</field>
+        </record>
+        
+        <record id="act_non_prevu_to_act_attente_validation" model="workflow.transition">
+            <field name="act_from" ref="act_non_prevu"/>
+            <field name="act_to" ref="act_attente_validation"/>
+            <field name="signal">validation_finance</field>
+        </record>
+        
+        <record id="act_attente_validation_to_act_wait_mode" model="workflow.transition">
+            <field name="act_from" ref="act_attente_validation"/>
+            <field name="act_to" ref="act_wait_mode"/>
+            <field name="signal">validation_dg</field>
+        </record>
+        
+        <record id="act_attente_validation_to_act_wait_mode2" model="workflow.transition">
+            <field name="act_from" ref="act_attente_validation"/>
+            <field name="act_to" ref="act_wait_mode"/>
+            <!-- <field name="condition">abs(solde) &lt;= 200000</field> -->
+            <field name="condition">amount_untaxed &lt;= 200000</field>
+        </record>
+        
+        <record id="act_attente_validation_to_act_refus_dg" model="workflow.transition">
+            <field name="act_from" ref="act_attente_validation"/>
+            <field name="act_to" ref="act_non_prevu"/>
+            <field name="signal">refus_dg</field>
+        </record>
+        
+        <record id="act_a_approuver_to_act_prevu" model="workflow.transition">
+            <field name="act_from" ref="act_a_approuver"/>
+            <field name="act_to" ref="act_prevu"/>
+            <field name="signal">action_accorder</field>
+            <field name="condition">statut_budget == &quot;prevu&quot;</field>
+        </record>
+        
+        <record id="act_prevu_to_act_attente_validation" model="workflow.transition">
+            <field name="act_from" ref="act_prevu"/>
+            <field name="act_to" ref="act_attente_validation"/>
+            <field name="condition">amount_untaxed &gt; 2000000</field>
+        </record>
+        
+        <record id="act_prevu_to_act_wait_mode" model="workflow.transition">
+            <field name="act_from" ref="act_prevu"/>
+            <field name="act_to" ref="act_wait_mode"/>
+            <field name="condition">amount_untaxed &lt;= 2000000</field>
+        </record>
+        
+        <record id="act_wait_mode_to_act_confirmed" model="workflow.transition">
+            <field name="act_from" ref="act_wait_mode"/>
+            <field name="act_to" ref="act_confirmed"/>
+            <field name="signal">valider_mode</field>
+        </record>
+        
+    </data>
+</odoo>

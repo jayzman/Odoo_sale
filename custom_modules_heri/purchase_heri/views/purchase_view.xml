@@ -1,0 +1,818 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<!-- Budget request form achat locaux-->
+		<record model="ir.ui.view" id="budget_request_form_view">
+			<field name="name">Budget Request</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form"/>
+			<field name="arch" type="xml">
+			    <xpath expr="//button[@name='action_view_picking'][2]" position="replace">
+                    <button name="action_view_picking" invisible="1"/>
+                </xpath> 
+                <xpath expr="//div[@class='oe_title']/label[2]" position="replace">
+                    <label string="Budget Request Achat" />
+                </xpath> 
+			    <!-- <xpath expr="//field[@name='picking_count']" position="replace">
+			    	<field name="picking_count" widget="statinfo" string="Shipment" help="Incoming Shipments"/>
+		    	</xpath> -->
+
+                <button name="action_view_invoice" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </button>
+                
+                <xpath expr="//button[@name='button_done']" position="replace">
+                    <button name="button_done" invisible="1"/>
+                </xpath>
+               
+                <xpath expr="//button[@name='action_rfq_send'][3]" position="replace">
+                    <button name="action_rfq_send" invisible="1"/>
+                </xpath>
+                
+				<xpath expr="//field[@name='state']" position="replace">
+					<field 
+					    name="state" 
+					    widget="statusbar" 
+					    statusbar_visible="nouveau,a_approuver,non_prevue,attente_validation,wait_mode,purchase"/>
+					    <field name="is_creator" invisible="1" />
+				</xpath>
+				<xpath expr="//div[@name='button_box']//button[@name='action_view_picking']" position="after">
+				 	<button type="object"
+	                            name="action_view_bex"
+	                            class="oe_stat_button"
+	                            icon="fa-folder"
+	                            attrs="{'invisible':[('state', 'not in', ('purchase'))]}">
+	                            <field name="bex_lie_count" widget="statinfo" string="Budget Expense Report" help="Incoming Bex"/>
+	                            <field name="bex_id" invisible="1"/>
+	                            <field name="picking_count" invisible="1"/>
+	                </button>
+                </xpath>
+                <button name="action_view_picking" position="replace">
+                    <button name="action_view_picking" invisible="1"/>
+                </button>
+            <!--     <button name="button_cancel" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </button> -->
+				<xpath expr="//field[@name='date_order']" position="after">
+					<field name="date_prevu"/>
+				    <field name="change_state_date" invisible="1"/>
+				    <field 
+				        name="budgetise" 
+				        string="BUDGETISE" 
+				        widget="monetary" 
+				        options="{'currency_field': 'currency_id'}"
+				        style="color:blue;"/><br/><br/>
+					<field 
+					    name="cumul" 
+					    string="CUMULE REAL + ENGAG." 
+					    widget="monetary" 
+					    options="{'currency_field': 'currency_id'}"
+					    style="color:blue;"/><br/><br/>
+					<field 
+					    name="solde" 
+					    string="SOLDE DE BUDGET" 
+					    widget="monetary" 
+					    options="{'currency_field': 'currency_id'}"
+					    style="color:blue;"/><br/><br/>
+					<field name="statut_budget" string="STATUT DU BUDGET" />
+					<field name="journal_id" widget="selection"/>
+					<field name="modalite_paiement" invisible="1"/>
+					<field name="statut_bex"/>
+				</xpath>                    
+				
+				<field name="date_order" position="attributes">
+			    	<attribute name="readonly">1</attribute>
+			    </field>
+			    
+				<xpath expr="//field[@name='product_id']" position="attributes">
+					<attribute name="string">Désignation HERi</attribute>
+					<attribute name="domain">[('type', 'in', ('product','consu'))]</attribute>
+				</xpath>
+				
+				<xpath expr="//field[@name='product_id']" position="after">
+					<field name="designation_frns" />
+				</xpath>
+				
+				<xpath expr="//field[@name='order_line']//field[@name='name']" position="attributes">
+					<attribute name="invisible">1</attribute>
+				</xpath>
+				
+				<xpath expr="//field[@name='order_line']//field[@name='date_planned']" position="attributes">
+					<attribute name="invisible">1</attribute>
+				</xpath>
+				
+				<xpath expr="//field[@name='date_planned'][3]" position="replace">
+					<field name="date_planned" invisible="1"/>
+				</xpath>
+								
+				<xpath expr="//label[5]" position="attributes">
+					<attribute name="for">none</attribute>
+				</xpath>
+				
+				<field name="partner_id" position="after">
+				    <field name="is_breq_stock" invisible="1"/>
+					<field name="purchase_type" attrs="{'invisible': [('parents_ids','=', False)], 'required': [('is_breq_stock', '=', False)],'readonly':[('service_type','!=','additionel')]}"/>
+					<field name="service_type" invisible="1"/>
+					<field name="parents_ids" attrs="{'invisible': [('parents_ids','=', False)]}"/>
+                    <field name="import_type" invisible="1"/>
+                    <field name="purchase_import_type" invisible="1"/>
+				    <field name="employee_id" />
+				    <field name="department_id"/>
+				    <field name="section"/>
+				    <field name="objet" placeholder="Veuillez saisir ici l'objet de la demande."/>
+				    <field name="nature"/>
+					<field name="manager_id" invisible="1"/>
+					<field name="region_id" invisible="1"/>
+					<field name="description" invisible="1"/>
+					<field name="is_manager" invisible="1"/>
+				</field>
+				
+				<xpath expr="//field[@name='state']" position="before">
+					<button 
+			      	    string="Avis supérieur hierarchique" 
+			      	    name="action_a_approuver"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('nouveau')), ('is_creator', '=', False)]}"
+			      	 />
+					<button 
+			      	    string="Accorder" 
+			      	    name="action_accorder"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('a_approuver')), ('is_manager', '=', False)]}"
+			      	 />
+					<button 
+			      	    string="A revoir" 
+			      	    name="refus_superieur"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('a_approuver')), ('is_manager', '=', False)]}"
+			      	 />
+					<button 
+			      	    string="Accorder" 
+			      	    name="validation_finance"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('non_prevue'))]}"
+			      	    groups="purchase_heri.group_finance_heri"
+			      	 />
+					<button 
+			      	    string="A revoir" 
+			      	    name="refus_finance"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('non_prevue'))]}"
+			      	    groups="purchase_heri.group_finance_heri"
+			      	 />
+					<button 
+			      	    string="Accorder" 
+			      	    name="validation_dg"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('attente_validation'))]}"
+			      	    groups="purchase_heri.group_dg_heri"
+			      	 />
+					<button 
+			      	    string="A revoir" 
+			      	    name="refus_dg"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('attente_validation'))]}"
+			      	    groups="purchase_heri.group_dg_heri"
+			      	 />
+					<button 
+			      	    string="Choisir le mode de paiement" 
+			      	    name="choisir_mode_paiement"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('wait_mode'))]}"
+			      	    groups="purchase_heri.group_finance_heri"
+			      	    type="object"
+			      	 />
+			      	 <!-- bouton pour le workflow achat import -->
+			      	 
+			      	 <!-- End bouton pour le workflow achat import -->
+				</xpath>
+				
+				<!-- Masquer le bouton button_confirm en dehors de l'etat puchase -->
+				<button name="button_confirm" position="replace">
+			      	<button 
+			      	    string="Confirm Order" 
+			      	    name="button_confirm" 
+			      	    class="oe_highlight" 
+			      	    invisible="1"
+			      	 />
+		      	</button>
+				
+			</field>
+		</record>	
+		<!-- End Budget request form -->
+		
+		<!-- Budget request form service-->
+		<record model="ir.ui.view" id="budget_request_form_view_inherit1">
+			<field name="name">Budget Request</field>
+			<field name="model">purchase.order</field>
+			<field name="mode">primary</field>
+			<field name="inherit_id" ref="purchase_heri.budget_request_form_view"/>
+			<field name="arch" type="xml">
+		    	<!-- <field name="product_id" positiion="replace">
+		    	    <field 
+                         name="product_id" 
+                         attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))]}" 
+                         context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id}"
+                         string="Désignation HERi" 
+                         domain="[('type', 'in', ('service'))]"/>
+		    	</field> -->
+				<xpath expr="//field[@name='product_id']" position="attributes">
+					<attribute name="domain">[('type','=','service')]</attribute>
+				</xpath>
+		    </field>
+	    </record>
+		<!-- End Budget request form service-->
+		
+		<!-- Budget request Tree View achats locaux -->
+	    <record model="ir.ui.view" id="budget_request_tree">
+	        <field name="name">Budget Request</field>
+	        <field name="model">purchase.order</field>
+	        <field name="arch" type="xml">
+	            <tree string="Budget Request" decoration-bf="message_unread==True" decoration-muted="state=='cancel'">
+	            	<field name="message_unread" invisible="1"/>
+                    <field name="name" string="Reference"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+	                <field name="partner_id"/>
+                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                    <field name="date_planned" invisible="context.get('quotation_only', False)"/>
+                    <field name="amount_untaxed" sum="Total Untaxed amount" string="Montant HT" widget="monetary"/>
+                    <field name="amount_total" sum="Total amount" widget="monetary"/>
+                    <field name="statut_budget"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="change_state_date" />
+                    <field name="statut_breq_bex"/>
+                    <field name="state" string="Etat BReq" invisible="1"/>
+                    <field name="statut_bex" invisible="1"/>
+                    <field name="is_creator" invisible="1"/>
+                    <field name="invoice_status" invisible="not context.get('show_purchase', False)"/>
+	            </tree>
+	        </field>
+	    </record>
+		<!-- End Budget request Tree View -->
+		
+		<!-- Budget request form View import -->
+		<record id="purchase_order_form2" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="arch" type="xml">
+                <form string="Achat Import">
+                <header>
+                    <button 
+                        string="Envoyer à la direction générale" 
+                        name="action_a_approuver2"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', 'not in', ('nouveau')), '|',('purchase_type', 'not in', ('purchase_import')),('is_creator','=',False)]}"
+                     />
+                    <button 
+                        string="Valider" 
+                        groups="purchase_heri.group_dg_heri"
+                        name="action_aviser_finance"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', 'not in', ('confirmation_dg')),('purchase_type', 'not in', ('purchase_import'))]}"
+                     />
+                    <button 
+                        string="A revoir" 
+                        groups="purchase_heri.group_dg_heri"
+                        name="action_refus_import_dg"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', 'not in', ('confirmation_dg')), ('purchase_type', 'not in', ('purchase_import'))]}"
+                     />
+                     <button 
+                        string="Envoyer OV à la banque" 
+                        groups="purchase_heri.group_finance_heri"
+                        name="action_send_to_bank"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', 'not in', ('aviser_finance')), ('purchase_type', 'not in', ('purchase_import'))]}"
+                     />
+                     <button 
+			      	    string="Choisir le mode de paiement" 
+			      	    name="choisir_mode_paiement"
+			      	    class="oe_highlight" 
+			      	    attrs="{'invisible': ['|',('state', 'not in', ('aviser_finance'))]}"
+			      	    groups="purchase_heri.group_finance_heri"
+			      	    type="object"
+			      	 />
+ 					<button 
+                        string="A revoir" 
+                        groups="purchase_heri.group_finance_heri"
+                        name="action_cancel_finance"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', 'not in', ('aviser_finance')), ('purchase_type', 'not in', ('purchase_import'))]}"
+                     />
+                     <button 
+                        string="Calculer prix de revient" 
+                        name="action_compute_prix_revient"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', '!=', 'ov_to_bank'),'|',('all_bex_validated', '!=',True),'|',('purchase_type', '!=', 'purchase_import'),('is_creator', '=',False)]}"
+                     	type="object"
+                     />   
+                     <button 
+                        string="A revoir" 
+                        groups="purchase_heri.group_finance_heri"
+                        name="action_cancel_bank"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', 'not in', ('ov_to_bank')), ('purchase_type', 'not in', ('purchase_import'))]}"
+                     /> 
+                     <button 
+                        string="Valider prix de revient" 
+                        name="action_br_lie"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', '!=', 'ov_to_bank'),'|',('all_bex_validated', '!=',True),'|',('purchase_type', '!=', 'purchase_import'),('is_creator', '=',False)]}"
+                     />
+                     <button 
+                        string="Créer BEX" 
+                        name="action_br_mere_ok"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', 'not in', ('br_lie')),'|',('purchase_type', 'not in', ('purchase_import')),('is_creator', '=',False)]}"
+                     />      
+                     <button 
+                        string="A revoir" 
+                        name="action_cancel_pr"
+                        class="oe_highlight" 
+                        attrs="{'invisible': ['|',('state', 'not in', ('br_lie')),'|', ('purchase_type', 'not in', ('purchase_import')),('is_creator','=',False)]}"
+                     /> 
+                     <button type="object"
+                            name="action_view_br_lie"
+                            class="oe_highlight" 
+                            string ="Budget Request Additionnel"
+                            invisible="1">
+                            <field name='purchase_ids' invisible="1"/>
+                    </button>
+                    <field name="state" widget="statusbar" statusbar_visible="nouveau,confirmation_dg,aviser_finance,ov_to_bank,br_lie,purchase" readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object"
+                            name="action_view_br_lie"
+                            class="oe_stat_button"
+                            icon="fa-plus-square"
+                            attrs="{'invisible': ['|',('purchase_type', 'not in', ('purchase_import')), ('is_creator', '=',False)]}">
+                            <field name="br_lie_count" widget="statinfo" string="Autres" help="Sous-Breq Additionnel"/>
+                            <field name='purchase_ids' invisible="1"/>
+                        </button>
+                        <button type="object"
+                            name="action_view_br_transport"
+                            class="oe_stat_button"
+                            icon="fa-truck"
+                            attrs="{'invisible': ['|',('purchase_type', 'not in', ('purchase_import')), ('is_creator', '=',False)]}">
+                            <field name="br_transport_lie_count" widget="statinfo" string="Transport" help="Sous-Breq Transport"/>
+                            <field name='purchase_ids_transport' invisible="1"/>
+                    	</button>
+                    	<button type="object"
+                            name="action_view_br_douane"
+                            class="oe_stat_button"
+                            icon="fa-anchor"
+                            attrs="{'invisible': ['|',('purchase_type', 'not in', ('purchase_import')), ('is_creator', '=',False)]}">
+                            <field name="br_douane_lie_count" widget="statinfo" string="Douane" help="Sous-Breq Douane"/>
+                            <field name='purchase_ids_douane' invisible="1"/>
+                    	</button>
+                    	<button type="object"
+                            name="action_view_br_assurance"
+                            class="oe_stat_button"
+                            icon="fa-font"
+                            attrs="{'invisible': ['|',('purchase_type', 'not in', ('purchase_import')), ('is_creator', '=',False)]}">
+                            <field name="br_assurance_lie_count" widget="statinfo" string="Assurance" help="Sous-Breq Assurance"/>
+                            <field name='purchase_ids_assurance' invisible="1"/>
+                    	</button>
+                        <button type="object"
+                            name="action_view_bex"
+                            class="oe_stat_button"
+                            icon="fa-folder"
+                            attrs="{'invisible':[('state', 'not in', ('purchase'))]}">
+                            <field name="bex_lie_count" widget="statinfo" string="BEX" help="Incoming Bex"/>
+                            <field name="bex_id" invisible="1"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                     <!--    <label string="Request for Quotation " attrs="{'invisible': [('state','not in',('draft','sent','bid'))]}"/> -->
+                        <label string="Achat Import " attrs="{'invisible': [('state','in',('draft','sent','bid'))]}"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" context="{'search_default_supplier':1, 'default_supplier':1, 'default_customer':0}" domain="[('supplier','=',True)]"/>
+                            <field name="purchase_type" invisible="1"/>
+                            <field name="is_creator" invisible="1" />
+                            <field name="parents_ids" attrs="{'invisible': [('parents_ids','=', False)]}" string="BReq d'origine"/>
+                            <field name="purchase_import_type" attrs="{'invisible': [('purchase_import_type','=', False)]}"/>
+                            <field name="employee_id" />
+                            <field name="department_id"/>
+                            <field name="section"/>
+                            <field name="objet" placeholder="Veuillez saisir ici l'objet de la demande."/>
+                            <field name="nature"/>
+                            <field name="all_bex_validated" invisible="1"/>
+                            <field name="manager_id" invisible="1"/>
+                            <field name="region_id" invisible="1"/>
+                            <field name="description" invisible="1"/>
+                            <field name="is_manager" invisible="1"/>
+                            <field name="partner_ref"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="currency_en_ar" invisible="1"/>
+                            <field 
+                                name="taux_change" 
+                                attrs="{'required': [('purchase_type','=','purchase_import')]}"
+                                widget="monetary" options="{'currency_field': 'currency_en_ar'}" />
+                            <field name="is_shipped" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date_order" readonly="1"/>
+                            <field name="date_prevu"/>
+                            <field name="change_state_date" invisible="1"/>
+                            <field name="budgetise" invisible="1"/>
+                            <field name="cumul" invisible="1"/>
+                            <field name="solde" invisible="1"/>
+                            <field name="statut_budget" string="STATUT BUDGET"/>
+                            <field name="journal_id" widget="selection"/>
+                            <field name="origin" attrs="{'invisible': [('origin','=',False)]}"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Products">
+                            <field name="order_line" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}">
+                                 <tree string="Purchase Order Lines" editable="bottom">
+                                    <field name="state" invisible="1"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field 
+                                        name="product_id" 
+                                        attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))]}" 
+                                        context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id}"
+                                        string="Désignation HERi" 
+                                        domain="[('type', 'in', ('product','consu'))]"/>
+                                    <field name="name" string="Désignation fournisseur" invisible="1" />
+                                    <field name="designation_frns" />
+                                    <field name="date_planned" invisible="1"/>
+                                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                    <field name="account_analytic_id" context="{'default_partner_id':parent.partner_id}" groups="purchase.group_analytic_accounting"/>
+                                    <field name="analytic_tag_ids" groups="purchase.group_analytic_accounting" widget="many2many_tags"/>
+                                    <field name="product_qty"/>
+                                    <field name="qty_received" invisible="not context.get('show_purchase', False)"/>
+                                    <field name="qty_invoiced" invisible="not context.get('show_purchase', False)"/>
+                                    <field name="product_uom" groups="product.group_uom" attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"/>
+                                    <field name="price_unit"/>
+                                    <field name="cout_revient"/>
+                                    <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" context="{'default_type_tax_use': 'purchase'}"/>
+                                    <field name="price_subtotal" widget="monetary"/>
+                                </tree>
+                                <form string="Purchase Order Line">
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                       context="{'partner_id': parent.partner_id}"/>
+                                                <label for="product_qty"/>
+                                                <div>
+                                                    <field name="product_qty" class="oe_inline"/>
+                                                    <span class="oe_inline">&#160;</span>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline"/>
+                                                </div>
+                                                <field name="price_unit"/>
+                                            </group>
+                                            <group>
+                                                <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use', '=', 'purchase')]"/>
+                                                <field name="date_planned" widget="date" invisible="1"/>
+                                                <field name="account_analytic_id" colspan="2" groups="purchase.group_analytic_accounting"/>
+                                                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                            </group>
+                                        </group>
+                                        <notebook>
+                                        <page string="Notes">
+                                            <field name="name"/>
+                                        </page><page string="Invoices and Incoming Shipments">
+                                            <field name="invoice_lines"/>
+                                            <field name="move_ids"/>
+                                        </page>
+                                        </notebook>
+                                    </sheet>
+                                </form>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <div class="oe_subtotal_footer_separator oe_inline">
+                                    <label for="amount_total"/>
+                                </div>
+                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </group>
+                            <field name="notes" class="oe_inline" placeholder="An administrator can set up default Terms and conditions in your Company settings."/>
+                            <div class="oe_clear"/>
+                        </page>
+                        <page string="Deliveries &amp; Invoices">
+                            <group>
+                                <group>
+                                    <div>
+                                        <field name="date_planned" required="1" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}" invisible="1"/>
+                                        <button name="action_set_date_planned" type="object"
+                                            states="draft,sent"
+                                            string="Set date to all order lines"
+                                            help="This changes the scheduled date of all order lines to the given date"
+                                            class="fa fa-calendar o_icon_button oe_edit_only"/>
+                                    </div>
+                                    <field name="picking_type_id" domain="[('code','=','incoming')]" options="{'no_create': True}" groups="stock.group_stock_multi_locations"/>
+                                    <field name="dest_address_id" groups="stock.group_stock_multi_locations" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')], 'required': [('default_location_dest_id_usage', '=', 'customer')]}"/>
+                                    <field name="default_location_dest_id_usage" invisible="1"/>
+                                    <field name="incoterm_id"/>
+                                </group>
+                                <group>
+                                    <field name="invoice_status"/>
+                                    <field name="payment_term_id" options="{'no_open': True, 'no_create': True}" attrs="{'readonly': ['|', ('invoice_status','=', 'invoiced'), ('state', '=', 'done')]}"/>
+                                    <field name="fiscal_position_id" attrs="{'readonly': ['|', ('invoice_status','=', 'invoiced'), ('state', '=', 'done')]}"/>
+                                    <field name="date_approve" groups="base.group_no_one"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+        <!-- Budget request transport,douane,assurance-->
+        <!-- Budget request transport-->		
+		<record id="action_br_achat_import_transport" model="ir.actions.act_window">
+            <field name="name">Budget Request transport</field>
+            <field name="res_model">purchase.order</field>
+            <field name="domain">['&amp;',('parents_ids','=',active_id),('service_type','=','transport')]</field>
+		   	<field name="context">{'default_parents_ids': active_id,'default_service_type': 'transport','default_purchase_type': 'purchase_not_stored'}</field>
+        </record>
+        
+        <record id="action_br_tree_transport" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.budget_request_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_achat_import_transport"/>
+        </record>
+
+        <record id="action_br_form_transport" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="purchase_heri.budget_request_form_view_inherit1"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_achat_import_transport"/>
+        </record>
+         <!--End Budget request transport-->
+		<!-- Budget request tdouane-->		
+		<record id="action_br_achat_import_douane" model="ir.actions.act_window">
+            <field name="name">Budget Request douane</field>
+            <field name="res_model">purchase.order</field>
+            <field name="domain">['&amp;',('parents_ids','=',active_id),('service_type','=','douane')]</field>
+		   	<field name="context">{'default_parents_ids': active_id,'default_service_type': 'douane','default_purchase_type': 'purchase_not_stored'}</field>
+        </record>
+        
+        <record id="action_br_tree_douane" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.budget_request_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_achat_import_douane"/>
+        </record>
+
+        <record id="action_br_form_douane" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="purchase_heri.budget_request_form_view_inherit1"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_achat_import_douane"/>
+        </record>
+         <!--End Budget request douane-->
+         <!-- Budget request assurance-->		
+		<record id="action_br_achat_import_assurance" model="ir.actions.act_window">
+            <field name="name">Budget Request assurance</field>
+            <field name="res_model">purchase.order</field>
+            <field name="domain">['&amp;',('parents_ids','=',active_id),('service_type','=','assurance')]</field>
+		   	<field name="context">{'default_parents_ids': active_id,'default_service_type': 'assurance','default_purchase_type': 'purchase_not_stored'}</field>
+        </record>
+        
+        <record id="action_br_tree_assurance" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.budget_request_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_achat_import_assurance"/>
+        </record>
+
+        <record id="action_br_form_assurance" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="purchase_heri.budget_request_form_view_inherit1"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_achat_import_assurance"/>
+        </record>
+         <!--End Budget request assurance-->
+
+		<!-- End Budget request transport,douane,assurance-->
+			    
+		<!-- Achats locaux stockés menu action -->
+	    <record model="ir.actions.act_window" id="action_stoke">
+	       <field name="name">Achats locaux stockés</field>
+	       <field name="res_model">purchase.order</field>
+			<field name="domain">[('purchase_type','=','purchase_stored')]</field>
+			<field name="context">{'default_purchase_type': 'purchase_stored'}</field>
+	       <field name="view_type">form</field>
+	       <field name="view_mode">tree,form</field>
+	       <field name="help" type="html">
+	         <p class="oe_view_nocontent_create">
+	             Click here to create a new Budget Request Stockés.
+	         </p>
+	       </field>
+	   	</record>
+	   	
+	   	<record id="action_br_tree_locaux_stocke" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.budget_request_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_stoke"/>
+        </record>
+
+        <record id="action_br_form_locaux_stocke" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="purchase_heri.budget_request_form_view"/>
+            <field name="act_window_id" ref="purchase_heri.action_stoke"/>
+        </record>
+	   	<!-- Fin Achats locaux stockés menu action -->
+        
+	   	<!-- Achats locaux non stockés menu action -->
+	    <record model="ir.actions.act_window" id="action_non_stoke">
+	       <field name="name">Achats locaux non stockés</field>
+	       <field name="res_model">purchase.order</field>
+		   <field name="domain">[('purchase_type','=','purchase_not_stored')]</field>
+			<field name="context">{'default_purchase_type': 'purchase_not_stored'}</field>
+	       <field name="view_type">form</field>
+	       <field name="view_mode">tree,form</field>
+	       <field name="help" type="html">
+	         <p class="oe_view_nocontent_create">
+	             Click here to create a new Budget Request Non Stockés.
+	         </p>
+	       </field>
+	   	</record>
+	   	
+   	   	<record id="action_br_tree_locaux_non_stocke" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.budget_request_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_non_stoke"/>
+        </record>
+
+        <record id="action_br_form_locaux_non_stocke" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="purchase_heri.budget_request_form_view_inherit1"/>
+            <field name="act_window_id" ref="purchase_heri.action_non_stoke"/>
+        </record>
+	   	<!-- Fin Achats locaux non stockés menu action -->
+        
+	   	<!-- Achats imports menu action -->
+	    <record id="action_br_achat_import" model="ir.actions.act_window">
+            <field name="name">Achats imports</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="budget_request_tree"/>
+            <field name="domain">[('purchase_type','=','purchase_import')]</field>
+		   	<field name="context">{'default_purchase_type': 'purchase_import'}</field>
+        </record>
+
+        <record id="action_br_tree_import" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.budget_request_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_achat_import"/>
+        </record>
+
+        <record id="action_br_form_import" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="purchase_heri.purchase_order_form2"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_achat_import"/>
+        </record>
+        <!-- Fin Achats imports menu action -->
+   		
+		<!-- Budget request lié button box action -->
+		<record id="action_br_lie_tree" model="ir.actions.act_window">
+            <field name="name">Budget Request Lié</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">['&amp;',('parents_ids','=',active_id),('service_type','=','additionel')]</field>
+            <field name="context">{'default_parents_ids': active_id,'default_service_type': 'additionel'}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to record a new Budget Request Lié.
+              </p>
+            </field>
+        </record>
+		
+		<record id="action_br_lie_tree_view" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.budget_request_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_lie_tree"/>
+        </record>
+
+        <record id="action_br_lie_form_view" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="purchase_heri.budget_request_form_view"/>
+            <field name="act_window_id" ref="purchase_heri.action_br_lie_tree"/>
+        </record>
+        <!-- Fin Budget request lié button box action -->
+		
+		<!-- Budget expenses report lié button box action -->
+		<record id="action_bex_lie_tree" model="ir.actions.act_window">
+            <field name="name">Budget Expenses Lié</field>
+            <field name="res_model">budget.expense.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('breq_id','=',active_id)]</field>
+        </record>
+        
+         <record id="action_bex_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.budget_expenses_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_bex_lie_tree"/>
+        </record>
+
+        <record id="action_bex_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_picking_bex_form"/>
+            <field name="act_window_id" ref="action_bex_lie_tree"/>
+        </record>
+		<!-- Fin Budget expenses report button box action -->
+		
+		<!-- Resource region Form -->
+		<record id="res_region_form_view" model="ir.ui.view">
+            <field name="name">res.region.form</field>
+            <field name="model">res.region</field>
+            <field name="arch" type="xml">
+                <form string="Region de l'activité" class="o_sale_order">
+                	<sheet>
+                		<group>
+                			<group>
+                				<field name="name" required="1"/>
+           						<field name="frais_base"/>
+                			</group>
+                		</group>
+                	</sheet>
+                </form>
+            </field>
+        </record>
+		<!-- Resource region Tree View -->
+	    <record model="ir.ui.view" id="res_region_tree">
+	        <field name="name">res.region.tree</field>
+	        <field name="model">res.region</field>
+	        <field name="arch" type="xml">
+	            <tree string="Branche" decoration-bf="message_unread==True">
+	            	<field name="name"/>
+	            	<field name="frais_base"/>
+	            </tree>
+	        </field>
+	    </record>
+		<!-- End Resource region Tree View-->
+		<!-- Resource region menu action -->
+	    <record model="ir.actions.act_window" id="action_res_region">
+	       <field name="name">Région</field>
+	       <field name="res_model">res.region</field>
+	       <field name="view_type">form</field>
+	       <field name="view_mode">tree,form</field>
+	       <field name="help" type="html">
+	         <p class="oe_view_nocontent_create">
+	             Click here to create a new Region.
+	         </p>
+	       </field>
+	   	</record>
+	   	
+	   	<record id="action_res_region_tree" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_heri.res_region_tree"/>
+            <field name="act_window_id" ref="purchase_heri.action_res_region"/>
+        </record>
+
+        <record id="action_res_region_form" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="purchase_heri.res_region_form_view"/>
+            <field name="act_window_id" ref="purchase_heri.action_res_region"/>
+        </record>
+   		<!-- Fin Resource region menu action -->
+
+		<record id="seq_budget_request" model="ir.sequence">  
+            <field name="name">Budget Request</field>  
+            <field name="code">budget.request.seq</field>  
+            <field name="prefix">BR N°</field>  
+            <field name="padding">4</field>  
+            <field eval="1" name="number_increment"/>  
+      	</record>  
+        <!-- Menus -->
+		<menuitem id="menu_stoke" parent="purchase.menu_procurement_management" action="action_stoke" name="Achats locaux stockés" sequence="1"/>
+		<menuitem id="menu_non_stoke" parent="purchase.menu_procurement_management" action="action_non_stoke" name="Achats locaux non stockés" sequence="2"/>
+		<menuitem id="menu_import" parent="purchase.menu_procurement_management" action="action_br_achat_import" name="Achats imports" sequence="3"/>
+		<menuitem id="menu_purchase_res_region" parent="purchase.menu_purchase_config" action="purchase_heri.action_res_region" name="Région" sequence="0"/>
+		<!-- Fin Menus -->
+		
+	</data>
+</odoo>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>		
+		<!--  budget request stock facture-->
+		<record model="ir.ui.view" id="facturation_tiers_form_view_facturation">
+			<field name="name">sale.facturation.tiers.invoice</field>
+			<field name="model">account.invoice</field>
+			<field name="mode">primary</field>
+			<field name="inherit_id" ref="account_invoice_form_view_advanced"/>
+			<field name="arch" type="xml">
+				<xpath expr="//form" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath> 
+			    <field name="invoice_line_tax_ids" position="replace">
+				    <field 
+				        name="invoice_line_tax_ids" 
+				        widget="many2many_tags" 
+				        options="{'no_create': True}"/>
+				</field>
+				<field name="partner_id" position="before">
+					<field name="breq_stock_id" invisible="1" />
+				</field>
+				<field name="state" position="replace">
+				    <field name="state" widget="statusbar" statusbar_visible="draft,open,paid"/>
+				</field>
+				<xpath expr="//button[@name='action_invoice_open'][1]" position="attributes">
+		    		<attribute name="invisible">1</attribute>
+		    	</xpath>
+		    	<xpath expr="//button[@name='action_invoice_sent']" position="attributes">
+		    		<attribute name="invisible">1</attribute>
+		    	</xpath>
+		    	<xpath expr="//button[@name='action_invoice_cancel']" position="attributes">
+		    		<attribute name="groups">purchase_heri.group_finance_heri</attribute>
+		    	</xpath>
+		    	<xpath expr="//button[@name='%(account.action_account_invoice_refund)d']" position="attributes">
+		    		<attribute name="invisible">1</attribute>
+		    	</xpath>
+		    	<xpath expr="//button[@name='%(account.action_account_invoice_payment)d']" position="attributes">
+		    		<attribute name="string">Comptabiliser</attribute>
+		    		<attribute name="groups">purchase_heri.group_finance_heri</attribute>
+		    		<attribute name="attrs">{'invisible':['|',('sent','=',False)]}</attribute>
+		    	</xpath>
+		    	<xpath expr="//button[@name='invoice_print'][1]" position="attributes">
+		    		<attribute name="string">Edition</attribute>
+		    		<attribute name="groups">purchase_heri.group_special_manager_heri</attribute>
+		    	</xpath>
+		    	<xpath expr="//button[@name='invoice_print'][2]" position="attributes">
+		    		<attribute name="invisible">1</attribute>
+		    	</xpath>
+		    	<xpath expr="//field[@name='state']" position="before">
+		    		<button name="print_duplicata" string="Imprimer" attrs="{'invisible': ['|',('state', 'not in', ('paid'))]}" type="object" class="oe_highlight" />
+		    		<button name="action_pour_visa" string="Pour visa" attrs="{'invisible': ['|',('state', 'not in', ('draft'))]}" groups="purchase_heri.group_finance_heri" type="object" class="oe_highlight" />
+		    	</xpath>
+			</field>
+		</record>
+		<record id="view_facture_sans_creer_tree" model="ir.ui.view">
+            <field name="name">facture.sans.creer.tree</field>
+            <field name="model">account.invoice</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="account.invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="edit">0</attribute>
+                </xpath> 
+			</field>
+        </record>
+		<record model="ir.actions.act_window" id="action_budget_request_stock_heri_lie_facture">
+	       	<field name="name">Facture</field>
+	       	<field name="res_model">account.invoice</field>
+			<field name="domain">[('breq_stock_id','=',active_id)]</field>
+	       	<field name="view_type">form</field>
+	       	<field name="view_mode">tree,form</field>
+	       	<field name="help" type="html">
+         	<p class="oe_view_nocontent_create">
+	             Click here to create a new Facture.
+         	</p>
+	       </field>
+	   	</record>
+		<record id="action_br_stock_tree_heri_lie_facture" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_facture_sans_creer_tree"/>
+            <field name="act_window_id" ref="action_budget_request_stock_heri_lie_facture"/>
+		</record>
+        <record id="action_br_stock_form_heri_lie_facture" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="facturation_tiers_form_view_facturation"/>
+            <field name="act_window_id" ref="action_budget_request_stock_heri_lie_facture"/>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_sale_heri_lie_facture">
+	       	<field name="name">Facture</field>
+	       	<field name="res_model">account.invoice</field>
+			<field name="domain">[('breq_id_sale','=',active_id)]</field>
+	       	<field name="view_type">form</field>
+	       	<field name="view_mode">tree,form</field>
+	       	<field name="help" type="html">
+         	<p class="oe_view_nocontent_create">
+	             Click here to create a new Facture.
+         	</p>
+	       </field>
+	   	</record>
+	   	
+		<record id="action_sale_tree_heri_lie_facture" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_facture_sans_creer_tree"/>
+            <field name="act_window_id" ref="action_sale_heri_lie_facture"/>
+		</record>
+        <record id="action_sale_form_heri_lie_facture" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="facturation_tiers_form_view_facturation"/>
+            <field name="act_window_id" ref="action_sale_heri_lie_facture"/>
+		</record>
+	</data>
+</odoo>

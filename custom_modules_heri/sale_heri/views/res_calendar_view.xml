@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+         
+    	
+        <record id="res_calendar_form_view" model="ir.ui.view">
+            <field name="name">res.calendar.form</field>
+            <field name="model">res.calendar</field>
+            <field name="arch" type="xml">
+                <form string="Calendrier">
+                	<sheet>
+                		<group>
+                			<group>
+                			    <field name="name"/>
+                				<field name="last_month"/>
+	            				<field name="current_month"/>
+                			</group>
+                		</group>
+                	</sheet>
+                </form>
+            </field>
+        </record>
+		<!-- Resource region Tree View -->
+	    <record model="ir.ui.view" id="res_calendar_tree">
+	        <field name="name">res.calendar.tree</field>
+	        <field name="model">res.calendar</field>
+	        <field name="arch" type="xml">
+	            <tree>
+	                <field name="name"/>
+	            	<field name="last_month"/>
+	            	<field name="current_month"/>
+	            </tree>
+	        </field>
+	    </record>
+		<!-- End Resource region Tree View-->
+		<!-- Resource region menu action -->
+	    <record model="ir.actions.act_window" id="action_res_calendar">
+	       <field name="name">Calendrier</field>
+	       <field name="res_model">res.calendar</field>
+	       <field name="view_type">form</field>
+	       <field name="view_mode">tree,form</field>
+	       <field name="help" type="html">
+	         <p class="oe_view_nocontent_create">
+	             Click here to create a new calendar.
+	         </p>
+	       </field>
+	   	</record>
+        
+        <menuitem 
+		    id="menu_res_calendar" 
+		    name="Calendrier" 
+		    parent="sales_team.menu_sales" 
+		    action="action_res_calendar" 
+		    sequence="2"/>
+    </data>
+</odoo>
